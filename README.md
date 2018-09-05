@@ -1,5 +1,5 @@
 # Guanaco
-A [Grasshopper](https://www.grasshopper3d.com/) plugin linking [Rhino](https://www.rhino3d.com/) with [Gmsh](http://gmsh.info/) mesher and [Calculix](http://www.calculix.de/) FE package, developed by [Tentech](https://tentech.nl/).
+A [Grasshopper](https://www.grasshopper3d.com/) plugin linking [Rhino](https://www.rhino3d.com/) with [Gmsh](http://gmsh.info/) mesher and [Calculix](http://www.calculix.de/) FE package, developed by [Tentech](https://tentech.nl/). The current implementation covers 1D & 2D elements (bars, panels) under structural loads.
 
 ## Prerequisites ##
 The plugin has been built with following versions of third party software:
