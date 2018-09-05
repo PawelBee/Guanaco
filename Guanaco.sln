@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Express 14 for Windows Desktop
+VisualStudioVersion = 14.0.25420.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GuanacoComponents", "GuanacoComponents\GuanacoComponents.csproj", "{B763210B-D54D-4C7D-A9EE-D01A0227FE81}"
+	ProjectSection(ProjectDependencies) = postProject
+		{C8FEB87D-E288-43F1-B8D1-C66129A38CC7} = {C8FEB87D-E288-43F1-B8D1-C66129A38CC7}
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Guanaco", "Guanaco\Guanaco.csproj", "{C8FEB87D-E288-43F1-B8D1-C66129A38CC7}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B763210B-D54D-4C7D-A9EE-D01A0227FE81}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B763210B-D54D-4C7D-A9EE-D01A0227FE81}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B763210B-D54D-4C7D-A9EE-D01A0227FE81}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B763210B-D54D-4C7D-A9EE-D01A0227FE81}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C8FEB87D-E288-43F1-B8D1-C66129A38CC7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C8FEB87D-E288-43F1-B8D1-C66129A38CC7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C8FEB87D-E288-43F1-B8D1-C66129A38CC7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C8FEB87D-E288-43F1-B8D1-C66129A38CC7}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
