@@ -333,10 +333,19 @@ namespace Guanaco
             }
         }
 
+        bool _composite;
+        public bool Composite
+        {
+            get
+            {
+                return this._composite;
+            }
+        }
+
         /***************************************************/
 
         // Constructors.
-        public Element2D(Mesh parentMesh, int id, List<int> nodes, int order, bool reducedIntegration)
+        public Element2D(Mesh parentMesh, int id, List<int> nodes, int order, bool reducedIntegration, bool composite = false)
         {
             this.SetParentMesh(parentMesh);
             this._id = id;
@@ -345,6 +354,7 @@ namespace Guanaco
             this._primaryNodeCount = nodes.Count / order;
             this._feType = Element2DType.Unknown;
             this._reducedIntegration = reducedIntegration;
+            this._composite = composite;
             this._pressure = 0;
             this._orientation = new Vector3d[] { new Vector3d(1, 0, 0), new Vector3d(0, 1, 0) };
             this._results = new Dictionary<string, double[]>();
