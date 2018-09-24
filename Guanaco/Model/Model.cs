@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Rhino.Geometry;
+using System.IO;
 
 namespace Guanaco
 {
@@ -268,10 +269,16 @@ namespace Guanaco
             {
                 doc.Objects.Add(this._panels[i].Surface);
             }
-            
+
             // Export the geometry to .iges files.
-            string exportCrvCom = "-_export _selcrv _enter \"" + this.GetModelFilePath() + "_Curves.iges\" _enter";
-            string exportSrfCom = "-_export _selsrf _enter \"" + this.GetModelFilePath() + "_Surfaces.iges\" _enter";
+            string curveFilePath = this.GetModelFilePath() + "_Curves.iges";
+            string surfaceFilePath = this.GetModelFilePath() + "_Surfaces.iges";
+            if (File.Exists(curveFilePath))
+                File.Delete(curveFilePath);
+            if (File.Exists(surfaceFilePath))
+                File.Delete(surfaceFilePath);
+            string exportCrvCom = "-_export _selcrv _enter \"" + curveFilePath + "\" _enter";
+            string exportSrfCom = "-_export _selsrf _enter \"" + surfaceFilePath + "\" _enter";
             Rhino.RhinoApp.RunScript(exportCrvCom, false);
             Rhino.RhinoApp.RunScript(exportSrfCom, false);
             Rhino.RhinoDoc.ActiveDoc.Views.RedrawEnabled = true;
