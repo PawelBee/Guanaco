@@ -156,11 +156,23 @@ namespace Guanaco
         // Convert panel information to CCX format.
         public override List<string> ToCCX()
         {
+            string panelType;
+            switch (this._feType)
+            {
+                case Element2D.Element2DType.Shell:
+                    panelType = "*SHELL";
+                    break;
+                case Element2D.Element2DType.Membrane:
+                    panelType = "*MEMBRANE";
+                    break;
+                default:
+                    throw new Exception(String.Format("{0} is not supported in the current implementation of Guanaco.", this._feType));
+            }
             List<string> CCXFormat = new List<string> { "*ORIENTATION,NAME=ORPANEL" + this.CCXId() };
             CCXFormat.Add(GuanacoUtil.RhinoVectorToString(this._lcs.XAxis) + "," + GuanacoUtil.RhinoVectorToString(this._lcs.YAxis));
             CCXFormat.Add("*ELSET,ELSET=PANEL" + this.CCXId());
             CCXFormat.AddRange(GuanacoUtil.IntsToCCX(this._elements, true));
-            CCXFormat.Add("*SHELL SECTION,MATERIAL=" + this._material.Name + ",ELSET=PANEL" + this.CCXId() + ",ORIENTATION=ORPANEL" + this.CCXId());
+            CCXFormat.Add(panelType + " SECTION,MATERIAL=" + this._material.Name + ",ELSET=PANEL" + this.CCXId() + ",ORIENTATION=ORPANEL" + this.CCXId());
             CCXFormat.Add(this._thickness.ToString(GuanacoUtil.Invariant));
             return CCXFormat;
         }
