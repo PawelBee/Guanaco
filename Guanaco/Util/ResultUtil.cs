@@ -212,12 +212,15 @@ namespace Guanaco
             if (model.Panels.Count == 0) return;
 
             // Find Ids of 2D elements.
-            List<int> el2DIds = new List<int>();
+            List<int> nonComposite2DIds = new List<int>();
             foreach (Element e in model.Mesh.Elements)
             {
-                if (e is Element2D)
-                    el2DIds.Add(e.Id);
+                if (e is Element2D && !(e as Element2D).Composite)
+                    nonComposite2DIds.Add(e.Id);
             }
+
+            if (nonComposite2DIds.Count == 0)
+                return;
 
             // Read result lines.
             string[] resLines = File.ReadAllLines(model.GetModelFilePath(GuanacoUtil.FileType.frd));
@@ -238,7 +241,7 @@ namespace Guanaco
                 else if (elInfo && line.StartsWith("-1"))
                 {
                     int elId = int.Parse(line.Split(GuanacoUtil.Space, StringSplitOptions.RemoveEmptyEntries)[1]) - 1;
-                    if (elId == el2DIds[elCount])
+                    if (elId == nonComposite2DIds[elCount])
                     {
                         Element2D e = model.Mesh.Elements[elId] as Element2D;
                         i++;
@@ -247,10 +250,12 @@ namespace Guanaco
                         vertIds.Add(splt.Take(e.PrimaryNodeCount * 2).ToArray());
 
                         elCount++;
-                        if (elCount == el2DIds.Count)
+                        if (elCount == nonComposite2DIds.Count)
                             break;
                     }
                 }
+                else if (elInfo && line.StartsWith("-3"))
+                    break;
             }
 
             // Read the results per each vertex.
@@ -284,9 +289,9 @@ namespace Guanaco
             }
 
             // Assign the values to the elements.
-            for (int i = 0; i < el2DIds.Count; i++)
+            for (int i = 0; i < nonComposite2DIds.Count; i++)
             {
-                Element2D e = model.Mesh.Elements[el2DIds[i]] as Element2D;
+                Element2D e = model.Mesh.Elements[nonComposite2DIds[i]] as Element2D;
                 int vertCount = vertIds[i].Length;
                 Type type = null;
                 switch (resultType)
