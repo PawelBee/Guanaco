@@ -31,11 +31,11 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="GH_IO">
-      <HintPath>%Appdata%\McNeel\Rhinoceros\5.0\Plug-ins\Grasshopper (b45a29b1-4343-4035-989e-044e8580d9cf)\0.9.76.0\GH_IO.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\Program Files\Common Files\McNeel\Rhinoceros\5.0\Plug-ins\Grasshopper (b45a29b1-4343-4035-989e-044e8580d9cf)\0.9.76.0\GH_IO.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Grasshopper">
-      <HintPath>%Appdata%\McNeel\Rhinoceros\5.0\Plug-ins\Grasshopper (b45a29b1-4343-4035-989e-044e8580d9cf)\0.9.76.0\Grasshopper.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\Program Files\Common Files\McNeel\Rhinoceros\5.0\Plug-ins\Grasshopper (b45a29b1-4343-4035-989e-044e8580d9cf)\0.9.76.0\Grasshopper.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Guanaco">
@@ -116,7 +116,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
-    <None Include="Resources\GuanacoInfo.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\BoxProfile.png" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\BuildModel.png" />
@@ -128,79 +130,97 @@
     <None Include="Resources\CCXInfo.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\CCXRunFile.png" />
+    <None Include="Resources\CCXPath.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\CCXRunFromFile.png" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\CCXSolveModel.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\Create3DPMaterial.png" />
+    <None Include="Resources\CreateBar.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\ExpandMesh.png" />
+    <None Include="Resources\CreatePanel.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\DropDown.png" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\GetListOfProperties.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\GetProperty.png" />
+    <None Include="Resources\GetPropertyByName.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\GetSSCurve.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\GmshBrep.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\GmshCreate.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\GmshRun.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\GravityLoad.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\InfillLoad.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\ModelPreview.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\PointLoad.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\PredeformationConvergence.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\PreviewResults.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\ReadMaterialData.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\SplitGenericList.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\StepConvergence.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\ToGHMesh.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\SupportType.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\CCXPredeform.png" />
+    <None Include="Resources\GmshBuildFile.png" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\GmshInfo.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\Support.png" />
+    <None Include="Resources\GmshModel.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\GmshParams.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\GmshPath.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\GmshRunFromFIle.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\GravityLoad.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\GuanacoInfo.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\InfillLoad.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\MaterialEngineeringConstants.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\MaterialIsotropic.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\ModelPreview.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\NodalForce.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\NodalMoment.png" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\PressureLoad.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\ResultPreview.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\SearchLibrary.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\SetBCs.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\SetPropertyByName.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\SplitGenericList.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Support.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\ToGHMesh.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\TubeProfile.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

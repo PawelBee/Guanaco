@@ -54,7 +54,7 @@ namespace Guanaco.Components
         {
             get
             {
-                return Icons.PointLoad;
+                return Icons.NodalForce;
             }
         }
 

@@ -89,7 +89,7 @@ namespace Guanaco.Components
         {
             get
             {
-                return Guanaco.Components.Icons.SupportType;
+                return Icons.DropDown;
             }
         }
     }

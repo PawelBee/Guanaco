@@ -64,7 +64,7 @@ namespace Guanaco.Components
         {
             get
             {
-                return Icons.GetPropertyByName;
+                return Icons.SetPropertyByName;
             }
         }
 

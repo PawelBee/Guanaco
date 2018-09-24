@@ -9,7 +9,7 @@ namespace Guanaco.Components
         /// Initializes a new instance of the GmshInfo class.
         /// </summary>
         public GmshInfo()
-          : base("Gmsh", "Gmsh",
+          : base("GmshInfo", "GmshInfo",
               "Info on Gmsh package.",
               "Guanaco", "Info")
         {

@@ -92,7 +92,7 @@ namespace Guanaco
         {
             get
             {
-                return null;
+                return Icons.DropDown;
             }
         }
 

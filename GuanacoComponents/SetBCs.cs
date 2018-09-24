@@ -12,7 +12,7 @@ namespace Guanaco.Components
         public SetBCs()
           : base("SetBCs", "SetBCs",
               "Set boundary conditions (loads, supports) to the model.",
-              "Guanaco", "Model")
+              "Guanaco", "BoundaryConditions")
         {
         }
 
@@ -65,7 +65,7 @@ namespace Guanaco.Components
             {
                 //You can add image files to your project resources and access them like this:
                 // return Resources.IconForThisComponent;
-                return null;
+                return Icons.SetBCs;
             }
         }
 

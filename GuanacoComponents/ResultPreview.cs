@@ -12,7 +12,7 @@ namespace Guanaco.Components
         public ResultPreview()
           : base("ResultPreview", "ResultPreview",
               "Preview the results.",
-              "Guanaco", "Model")
+              "Guanaco", "Results")
         {
         }
 
@@ -191,7 +191,7 @@ namespace Guanaco.Components
         {
             get
             {
-                return Icons.ModelPreview;
+                return Icons.ResultPreview;
             }
         }
 

@@ -13,7 +13,7 @@ namespace Guanaco.Components
         public CreatePanel()
           : base("CreatePanel", "CreatePanel",
               "Create a panel.",
-              "Guanaco", "Model")
+              "Guanaco", "Elements")
         {
         }
 
@@ -69,7 +69,7 @@ namespace Guanaco.Components
             {
                 //You can add image files to your project resources and access them like this:
                 // return Resources.IconForThisComponent;
-                return null;
+                return Icons.CreatePanel;
             }
         }
 
