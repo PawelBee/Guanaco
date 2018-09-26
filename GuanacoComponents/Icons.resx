@@ -133,9 +133,6 @@
   <data name="CCXPath" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Resources\CCXPath.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="CCXRunFromFile" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>Resources\CCXRunFromFile.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
   <data name="CCXSolveModel" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Resources\CCXSolveModel.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
@@ -169,9 +166,6 @@
   <data name="GmshPath" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Resources\GmshPath.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="GmshRunFromFIle" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>Resources\GmshRunFromFIle.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
   <data name="GravityLoad" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Resources\GravityLoad.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
@@ -201,6 +195,9 @@
   </data>
   <data name="ResultPreview" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Resources\ResultPreview.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="RunFromFile" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>Resources\RunFromFile.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="SearchLibrary" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>Resources\SearchLibrary.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>

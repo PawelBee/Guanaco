@@ -113,16 +113,6 @@ namespace Guanaco.Components {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap CCXRunFromFile {
-            get {
-                object obj = ResourceManager.GetObject("CCXRunFromFile", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
         internal static System.Drawing.Bitmap CCXSolveModel {
             get {
                 object obj = ResourceManager.GetObject("CCXSolveModel", resourceCulture);
@@ -233,16 +223,6 @@ namespace Guanaco.Components {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap GmshRunFromFIle {
-            get {
-                object obj = ResourceManager.GetObject("GmshRunFromFIle", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
         internal static System.Drawing.Bitmap GravityLoad {
             get {
                 object obj = ResourceManager.GetObject("GravityLoad", resourceCulture);
@@ -336,6 +316,16 @@ namespace Guanaco.Components {
         internal static System.Drawing.Bitmap ResultPreview {
             get {
                 object obj = ResourceManager.GetObject("ResultPreview", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap RunFromFile {
+            get {
+                object obj = ResourceManager.GetObject("RunFromFile", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

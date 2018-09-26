@@ -133,9 +133,6 @@
     <None Include="Resources\CCXPath.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\CCXRunFromFile.png" />
-  </ItemGroup>
-  <ItemGroup>
     <None Include="Resources\CCXSolveModel.png" />
   </ItemGroup>
   <ItemGroup>
@@ -167,9 +164,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\GmshPath.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\GmshRunFromFIle.png" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\GravityLoad.png" />
@@ -221,6 +215,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\TubeProfile.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\RunFromFile.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
