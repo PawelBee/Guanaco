@@ -36,7 +36,7 @@ namespace Guanaco.Components
         /// <param name="DA">The DA object is used to retrieve from inputs and store in outputs.</param>
         protected override void SolveInstance(IGH_DataAccess DA)
         {
-            DA.SetData(0, "Version 2.12. http://www.calculix.de/");
+            DA.SetData(0, "Version 2.14. http://www.calculix.de/");
         }
 
         /// <summary>

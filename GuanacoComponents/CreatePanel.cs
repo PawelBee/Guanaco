@@ -13,7 +13,7 @@ namespace Guanaco.Components
         public CreatePanel()
           : base("CreatePanel", "CreatePanel",
               "Create a panel.",
-              "Guanaco", "Elements")
+              "Guanaco", "Components")
         {
         }
 

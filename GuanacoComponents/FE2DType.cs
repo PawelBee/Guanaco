@@ -20,7 +20,7 @@ namespace Guanaco.Components
             this.Description = "Finite element 2D type.";
             this.Name = "FE2DType";
             this.Category = "Guanaco";
-            this.SubCategory = "Mesh";
+            this.SubCategory = "Components";
             this.NickName = "FE2DType";
 
             base.ListItems.Clear();

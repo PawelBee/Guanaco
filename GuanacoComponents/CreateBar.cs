@@ -12,7 +12,7 @@ namespace Guanaco.Components
         public CreateBar()
           : base("CreateBar", "CreateBar",
               "Create a bar.",
-              "Guanaco", "Elements")
+              "Guanaco", "Components")
         {
         }
 

@@ -11,7 +11,7 @@ namespace Guanaco.Components
         public BoxProfile()
           : base("BoxProfile", "BoxProfile",
               "Create a box profile.",
-              "Guanaco", "Elements")
+              "Guanaco", "Components")
         {
         }
 

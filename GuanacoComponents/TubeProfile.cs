@@ -11,7 +11,7 @@ namespace Guanaco.Components
         public TubeProfile()
           : base("TubeProfile", "TubeProfile",
               "Create a tube profile.",
-              "Guanaco", "Elements")
+              "Guanaco", "Components")
         {
         }
 
