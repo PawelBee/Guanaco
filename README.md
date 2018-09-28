@@ -11,6 +11,9 @@ The plugin has been built with following versions of third party software:
 ## Compilation ##
 The code has been built with Visual Studio 2015 using .NET4.5 framework. It should compile once the Grasshopper-related references are sorted out. It is recommeneded to change the post-build actions in the properties to copy the libraries into relevant Grasshopper Libraries folder.
 
+## How to use ##
+The Wiki is available [here](https://github.com/PawelBee/Guanaco/wiki).
+
 ## Contribute ##
 Guanaco is a Tentech open-source project and would be nothing without its community. You can freely fork from the main repo or create branches & submit your own code to the project via Github [pull request](https://help.github.com/articles/using-pull-requests).
 
