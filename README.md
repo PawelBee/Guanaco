@@ -5,7 +5,7 @@ A [Grasshopper](https://www.grasshopper3d.com/) plugin linking [Rhino](https://w
 The plugin has been built with following versions of third party software:
 - Rhino 5
 - Grasshopper 0.9.76
-- Calculix 2.12 (custom build fixing minor bugs, most functionalities should work on the one available on the official [website](http://www.calculix.de/))
+- Calculix 2.14 (most functionalities should work on the one available on the official [website](http://www.calculix.de/))
 - Gmsh 3.01
 
 ## Compilation ##
