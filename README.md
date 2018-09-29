@@ -5,11 +5,11 @@ A [Grasshopper](https://www.grasshopper3d.com/) plugin linking [Rhino](https://w
 The plugin has been built with following versions of third party software:
 - Rhino 5
 - Grasshopper 0.9.76
-- Calculix 2.14 (most functionalities should work on the one available on the official [website](http://www.calculix.de/))
+- Calculix 2.14 (most/all functionalities should work with the versioh one available on the official [website](http://www.calculix.de/))
 - Gmsh 3.01
 
 ## Compilation ##
-The code has been built with Visual Studio 2015 using .NET4.5 framework. It should compile once the Grasshopper-related references are sorted out. It is recommeneded to change the post-build actions in the properties to copy the libraries into relevant Grasshopper Libraries folder.
+The code has been built with Visual Studio 2015 using .NET4.5 framework. It should compile once the Grasshopper-related references are sorted out. It is recommeneded to change the post-build actions in the properties to copy the libraries directly into relevant Grasshopper libraries folder.
 
 ## How to use ##
 The Wiki is available [here](https://github.com/PawelBee/Guanaco/wiki).
