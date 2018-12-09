@@ -51,8 +51,14 @@ namespace Guanaco.Components
             if (input.Mesh == null) throw new Exception("The boundary conditions can be applied to a meshed model only.");
 
             Model model = input.Clone() as Model;
-            foreach (Load l in loads) model.Mesh.ApplyLoad(l, model.Tolerance);
-            foreach (Guanaco.Support s in supports) model.AddSupport(s);
+            foreach (Load l in loads)
+            {
+                model.AddLoad(l.Clone() as Load);
+            }
+            foreach (Guanaco.Support s in supports)
+            {
+                model.AddSupport(s.Clone() as Guanaco.Support);
+            }
             DA.SetData(0, model);
         }
 

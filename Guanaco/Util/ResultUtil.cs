@@ -1,8 +1,8 @@
-﻿using System;
+﻿using Rhino.Geometry;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Rhino.Geometry;
 
 namespace Guanaco
 {
@@ -121,7 +121,8 @@ namespace Guanaco
             for (int i = 0; i < model.Mesh.Nodes.Count; i++)
             {
                 double[] disp = resLines[resid + i].Split(GuanacoUtil.Space, StringSplitOptions.RemoveEmptyEntries).Select(x => double.Parse(x, GuanacoUtil.FloatNum)).ToArray();
-                model.Mesh.Nodes[i].SetDisplacement(new Vector3d(disp[1], disp[2], disp[3]));
+                model.Mesh.Nodes[i].ResetDisplacement();
+                model.Mesh.Nodes[i].AddDisplacement(new Vector3d(disp[1], disp[2], disp[3]));
             }
         }
 
@@ -131,12 +132,7 @@ namespace Guanaco
         public static void Read1DElementForces(Model model, int step = 0, double totalTime = 1.0)
         {
             if (model.Bars.Count == 0) return;
-
-            List<int> el1DIds = new List<int>();
-            foreach (Element e in model.Mesh.Elements)
-            {
-                if (e is Element1D) el1DIds.Add(e.Id);
-            }
+            int el1DCount = model.Bars.Select(b => b.Elements.Count()).Sum();
 
             string[] resLines = File.ReadAllLines(model.GetModelFilePath(GuanacoUtil.FileType.dat));
 
@@ -158,7 +154,7 @@ namespace Guanaco
                         break;
                     }
                     stepCount++;
-                    i += el1DIds.Count * 2 * 20 - 1;
+                    i += el1DCount * 2 * 20 - 1;
                 }
             }
 
@@ -167,39 +163,41 @@ namespace Guanaco
                 throw new Exception("Oooops, the iteration did not converge!");
             }
 
-            for (int i = 0; i < el1DIds.Count; i++)
+            foreach (Bar bar in model.Bars)
             {
-                Element1D e = model.Mesh.Elements[el1DIds[i]] as Element1D;
+                Plane LCS = new Plane(bar.LCS);
+                LCS.Rotate(bar.Rotation, LCS.ZAxis);
+                Transform t = Transform.PlaneToPlane(Plane.WorldXY, LCS);
 
-                foreach (string s in Enum.GetNames(typeof(SectionForces1D)).Skip(1))
+                foreach (Element element in bar.Elements)
                 {
-                    if (!e.Results.ContainsKey(s))
-                        e.Results.Add(s, new double[2]);
-                }
+                    Element1D e = element as Element1D;
 
-                double multiplier = 1;
-                for (int j = 0; j < 2; j++)
-                {
-                    Bar parentBar = e.ParentComponent as Bar;
-                    Plane LCS = new Plane(parentBar.LCS);
-                    LCS.Rotate(parentBar.Rotation, LCS.ZAxis);
-                    Transform t = Transform.PlaneToPlane(Plane.WorldXY, LCS);
+                    foreach (string s in Enum.GetNames(typeof(SectionForces1D)).Skip(1))
+                    {
+                        if (!e.Results.ContainsKey(s))
+                            e.AddResult(s, new double[2]);
+                    }
 
-                    double[] force = resLines[lineNo].Split(GuanacoUtil.Space, StringSplitOptions.RemoveEmptyEntries).Select(x => double.Parse(x, GuanacoUtil.FloatNum)).Take(3).ToArray();
-                    Vector3d forceV = new Vector3d(force[0], force[1], force[2]) * multiplier;
-                    forceV.Transform(t);
-                    e.Results["Fx"][j] = forceV.X;
-                    e.Results["Fy"][j] = forceV.Y;
-                    e.Results["Fz"][j] = forceV.Z;
-                    lineNo += 8;
-                    double[] moment = resLines[lineNo].Split(GuanacoUtil.Space, StringSplitOptions.RemoveEmptyEntries).Select(x => double.Parse(x, GuanacoUtil.FloatNum)).ToArray();
-                    Vector3d momentV = new Vector3d(moment[0], moment[1], moment[2]) * multiplier;
-                    momentV.Transform(t);
-                    e.Results["Mxx"][j] = momentV[0];
-                    e.Results["Myy"][j] = momentV[1];
-                    e.Results["Mzz"][j] = momentV[2];
-                    lineNo += 12;
-                    multiplier *= -1;
+                    double multiplier = 1;
+                    for (int j = 0; j < 2; j++)
+                    {
+                        double[] force = resLines[lineNo].Split(GuanacoUtil.Space, StringSplitOptions.RemoveEmptyEntries).Select(x => double.Parse(x, GuanacoUtil.FloatNum)).Take(3).ToArray();
+                        Vector3d forceV = new Vector3d(force[0], force[1], force[2]) * multiplier;
+                        forceV.Transform(t);
+                        e.Results["Fx"][j] = forceV.X;
+                        e.Results["Fy"][j] = forceV.Y;
+                        e.Results["Fz"][j] = forceV.Z;
+                        lineNo += 8;
+                        double[] moment = resLines[lineNo].Split(GuanacoUtil.Space, StringSplitOptions.RemoveEmptyEntries).Select(x => double.Parse(x, GuanacoUtil.FloatNum)).ToArray();
+                        Vector3d momentV = new Vector3d(moment[0], moment[1], moment[2]) * multiplier;
+                        momentV.Transform(t);
+                        e.Results["Mxx"][j] = momentV[0];
+                        e.Results["Myy"][j] = momentV[1];
+                        e.Results["Mzz"][j] = momentV[2];
+                        lineNo += 12;
+                        multiplier *= -1;
+                    }
                 }
             }
         }
@@ -216,7 +214,7 @@ namespace Guanaco
             foreach (Element e in model.Mesh.Elements)
             {
                 if (e is Element2D && !(e as Element2D).Composite)
-                    nonComposite2DIds.Add(e.Id);
+                    nonComposite2DIds.Add(e.Id.AsInteger);
             }
 
             if (nonComposite2DIds.Count == 0)
@@ -268,20 +266,22 @@ namespace Guanaco
                 int nodeId = int.Parse(line.Substring(4, 9));
                 double[] nodeValue = new double[6];
                 int i = 13;
+
                 for (int j = 0; j < 6; j++)
                 {
                     string resultString = line.Substring(i, 12);
                     double resultValue = double.NaN;
+
                     if (double.TryParse(resultString, GuanacoUtil.FloatNum, GuanacoUtil.Invariant, out resultValue))
                         nodeValue[j] = resultValue;
                     else if (resultString.Substring(9) == "INF")
-                    {
                         nodeValue[j] = resultString[8] == '-' ? double.NegativeInfinity : double.PositiveInfinity;
-                    }
                     else
                         throw new Exception("The result format is incorrect, please inspect the result .frd file.");
+
                     i += 12;
                 }
+
                 nodeValues.Add(nodeId, nodeValue);
                 resid++;
                 line = resLines[resid];
@@ -294,6 +294,7 @@ namespace Guanaco
                 Element2D e = model.Mesh.Elements[nonComposite2DIds[i]] as Element2D;
                 int vertCount = vertIds[i].Length;
                 Type type = null;
+
                 switch (resultType)
                 {
                     case ResultGroup.Stress:
@@ -307,7 +308,8 @@ namespace Guanaco
                 string[] names = Enum.GetNames(type).Skip(1).ToArray();
                 foreach (string name in names)
                 {
-                    if (!e.Results.ContainsKey(name)) e.Results.Add(name, new double[vertCount]);
+                    if (!e.Results.ContainsKey(name))
+                        e.AddResult(name, new double[vertCount]);
                 }
 
                 for (int j = 0; j < vertCount; j++)
@@ -410,7 +412,8 @@ namespace Guanaco
             Type t1 = resultType.GetType();
             foreach (Type t2 in resultDimension[dimension])
             {
-                if (t1 == t2) return;
+                if (t1 == t2)
+                    return;
             }
             throw new Exception(string.Format("The input result {0} is not applicable to {1}-dimensional objects.", resultType, dimension));
         }

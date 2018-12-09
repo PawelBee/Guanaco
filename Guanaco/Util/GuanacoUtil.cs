@@ -1,7 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using Rhino.Geometry;
+using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using Rhino.Geometry;
 using System.Xml.Serialization;
 
 namespace Guanaco
@@ -29,13 +29,9 @@ namespace Guanaco
             for (int i = 0; i < l.Count; i += n)
             {
                 if (l.Count < i + n)
-                {
                     list.Add(l.GetRange(i, l.Count - i));
-                }
                 else
-                {
                     list.Add(l.GetRange(i, n));
-                }
             }
             return list;
         }
@@ -43,7 +39,7 @@ namespace Guanaco
         /***************************************************/
 
         // Convert list of integers to CCX format.
-        public static List<string> IntsToCCX(List<int> ints, bool toCCXIds = false)
+        public static List<string> IntsToCCX(IEnumerable<int> ints, bool toCCXIds = false)
         {
             List<int> data = new List<int>(ints);
             if (toCCXIds)
@@ -53,13 +49,16 @@ namespace Guanaco
                     data[i]++;
                 }
             }
+
             List<string> CCXFormat = new List<string>();
             foreach (List<int> chnk in GuanacoUtil.Chunks(data, 16))
             {
                 CCXFormat.Add(string.Join(",", chnk) + ",");
             }
+
             if (CCXFormat.Count != 0)
                 CCXFormat[CCXFormat.Count - 1] = CCXFormat.Last().TrimEnd(',');
+
             return CCXFormat;
         }
 

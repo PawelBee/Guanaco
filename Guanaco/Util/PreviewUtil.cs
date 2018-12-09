@@ -1,8 +1,8 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using Rhino.Geometry;
+﻿using Rhino.Geometry;
 using System;
+using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 
 namespace Guanaco
 {
@@ -53,9 +53,8 @@ namespace Guanaco
                 {
                     Vector3d fOffset = panel.LCS.ZAxis * 0.002;
                     if (showThk)
-                    {
                         fOffset += panel.LCS.ZAxis * 0.5 * panel.Thickness;
-                    }
+
                     Plane fp = new Plane(panel.LCS.Origin + fOffset, panel.LCS.ZAxis);
                     Plane bp = new Plane(panel.LCS.Origin - fOffset, -panel.LCS.ZAxis);
                     Rhino.Display.Text3d ft = new Rhino.Display.Text3d("Panel " + panel.CCXId(), fp, elementFactor * 0.6 * textFactor);
@@ -66,17 +65,20 @@ namespace Guanaco
                     display.AddText(bt, Color.DarkRed);
                 }
 
-                foreach (int eId in panel.Elements)
+                foreach (Element element in panel.Elements)
                 {
-                    Element2D e = model.Mesh.Elements[eId] as Element2D;
-                    for (int j = 0; j < e.PrimaryNodeCount; j++)
+                    Element2D e = element as Element2D;
+                    int eId = e.Id.AsInteger;
+                    foreach(Node n in e.Nodes.Take(e.PrimaryNodeCount))
                     {
-                        nodeIds.Add(e.Nodes[j]);
+                        nodeIds.Add(n.Id.AsInteger);
                     }
 
                     Color bottomColor;
                     Color topColor;
-                    if (panelResultType == "None") bottomColor = topColor = Color.Aqua;
+
+                    if (panelResultType == "None")
+                        bottomColor = topColor = Color.Aqua;
                     else
                     {
                         bottomColor = gradient.ColourAt((panelBottomResults[eId] - panelMin) / (panelMax - panelMin));
@@ -144,26 +146,19 @@ namespace Guanaco
                         foreach (Point3d pt in e.PopulateWithPoints())
                         {
                             if (e.Pressure > 0)
-                            {
                                 display.AddVector(pt - pv - offset, pv);
-                            }
                             else
-                            {
                                 display.AddVector(pt - pv + offset, pv);
-                            }
                         }
 
                         if (showLoadValues)
                         {
-                            Plane p = new Plane();
+                            Plane p;
                             if (e.Pressure > 0)
-                            {
                                 p = new Plane(e.GetCentroid() - pv * 1.1 - offset, Vector3d.XAxis, Vector3d.ZAxis);
-                            }
                             else
-                            {
                                 p = new Plane(e.GetCentroid() - pv * 1.1 + offset, Vector3d.XAxis, Vector3d.ZAxis);
-                            }
+
                             Rhino.Display.Text3d t = new Rhino.Display.Text3d(e.Pressure.ToString("G2"), p, elementFactor * 0.4 * textFactor);
                             t.Bold = true;
                             display.AddText(t, Color.Magenta);
@@ -195,6 +190,7 @@ namespace Guanaco
             // Take all results out first to determine min & max, otherwise could be done inside the loop.
             Dictionary<int, double[]> barResults = new Dictionary<int, double[]>();
             double BFactor = 0;
+
             if (barResultType != "None")
             {
                 barResults = model.Mesh.GetElementResults(barResultType);
@@ -213,7 +209,8 @@ namespace Guanaco
                 locLCS.Translate(locLCS.YAxis * bar.Offset.Y);
 
                 Vector3d hOffset = locLCS.XAxis * (bar.Profile.GetHeight() * 0.5);
-                if (showThk) hOffset *= 2;
+                if (showThk)
+                    hOffset *= 2;
 
                 Plane tp = new Plane(locLCS.Origin, bar.LCS.YAxis, Vector3d.ZAxis);
                 tp.Translate(hOffset);
@@ -226,11 +223,13 @@ namespace Guanaco
                     display.AddText(t, Color.DarkRed);
                 }
 
-                foreach (int eId in bar.Elements)
+                foreach (Element element in bar.Elements)
                 {
-                    Element1D e = model.Mesh.Elements[eId] as Element1D;
-                    nodeIds.Add(e.Nodes[0]);
-                    nodeIds.Add(e.Nodes.Last());
+                    Element1D e = element as Element1D;
+                    int eId = e.Id.AsInteger;
+
+                    nodeIds.Add(e.Nodes.First().Id.AsInteger);
+                    nodeIds.Add(e.Nodes.Last().Id.AsInteger);
 
                     Point3d[] endPts = e.GetVertices().ToArray();
                     Point3d c = (endPts[0] + endPts[1]) * 0.5;
@@ -271,6 +270,7 @@ namespace Guanaco
                                 graphDir = barResDir == "y" ? locLCS.YAxis : locLCS.XAxis;
                                 break;
                         }
+
                         graphDir *= BFactor * graphicFactor;
                         Point3d[] cPts = new Point3d[] { endPts[0], endPts[1], endPts[1] + graphDir * barResults[eId][1], endPts[0] + graphDir * barResults[eId][0] };
                         display.AddPolygon(cPts, Color.CornflowerBlue, Color.Black, true, true);
@@ -320,6 +320,7 @@ namespace Guanaco
             List<double> nodeResults = new List<double>();
             double nodeMax = 0;
             double nodeMin = 0;
+
             if (nodeResultType != "None")
             {
                 nodeResults = model.Mesh.GetNodeDisplacement(nodeResultType);
@@ -330,15 +331,15 @@ namespace Guanaco
             foreach (int i in ids)
             {
                 Node n = model.Mesh.Nodes[i];
-                if (!n.Primary) continue;
+                if (!n.Primary)
+                    continue;
 
                 if (showNodes)
                 {
                     if (nodeResults.Count > 0)
-                    {
                         display.AddPoint(n.Location, gradient.ColourAt((nodeResults[i] - nodeMin) / (nodeMax - nodeMin)), Rhino.Display.PointStyle.Simple, Math.Max(1, Convert.ToInt32(5 * elementFactor * graphicFactor)));
-                    }
-                    else display.AddPoint(n.Location, Color.DarkRed, Rhino.Display.PointStyle.Simple, Math.Max(1, Convert.ToInt32(5 * elementFactor * graphicFactor)));
+                    else
+                        display.AddPoint(n.Location, Color.DarkRed, Rhino.Display.PointStyle.Simple, Math.Max(1, Convert.ToInt32(5 * elementFactor * graphicFactor)));
                 }
 
                 if (showResultValues && nodeResults.Count > 0)
@@ -401,23 +402,32 @@ namespace Guanaco
 
             foreach (Support s in model.Supports)
             {
-                foreach (int id in ids.Intersect(s.Nodes))
+                foreach (int id in ids.Intersect(s.Nodes.Select(n => n.Id.AsInteger)))
                 {
                     Node n = model.Mesh.Nodes[id];
                     foreach (int dof in s.SupportType.DOFs)
                     {
-                        if (dof == 1)
-                            display.PreviewTanslationSupport(n, Vector3d.XAxis, translationSupportFactor);
-                        if (dof == 2)
-                            display.PreviewTanslationSupport(n, Vector3d.YAxis, translationSupportFactor);
-                        if (dof == 3)
-                            display.PreviewTanslationSupport(n, Vector3d.ZAxis, translationSupportFactor);
-                        if (dof == 4)
-                            display.PreviewRotationSupport(n, Vector3d.XAxis, rotationSupportFactor);
-                        if (dof == 5)
-                            display.PreviewRotationSupport(n, Vector3d.YAxis, rotationSupportFactor);
-                        if (dof == 6)
-                            display.PreviewRotationSupport(n, Vector3d.ZAxis, rotationSupportFactor);
+                        switch (dof)
+                        {
+                            case 1:
+                                display.PreviewTanslationSupport(n, Vector3d.XAxis, translationSupportFactor);
+                                break;
+                            case 2:
+                                display.PreviewTanslationSupport(n, Vector3d.YAxis, translationSupportFactor);
+                                break;
+                            case 3:
+                                display.PreviewTanslationSupport(n, Vector3d.ZAxis, translationSupportFactor);
+                                break;
+                            case 4:
+                                display.PreviewRotationSupport(n, Vector3d.XAxis, rotationSupportFactor);
+                                break;
+                            case 5:
+                                display.PreviewRotationSupport(n, Vector3d.YAxis, rotationSupportFactor);
+                                break;
+                            case 6:
+                                display.PreviewRotationSupport(n, Vector3d.ZAxis, rotationSupportFactor);
+                                break;
+                        }
                     }
                 }
             }
@@ -435,9 +445,9 @@ namespace Guanaco
 
             foreach (Panel panel in model.Panels)
             {
-                foreach (int eId in panel.Elements)
+                foreach (Element element in panel.Elements)
                 {
-                    Element2D e = model.Mesh.Elements[eId] as Element2D;
+                    Element2D e = element as Element2D;
                     List<Point3d> eVertices = e.GetVertices().ToList();
                     if (e.PrimaryNodeCount == 3)
                     {
@@ -445,9 +455,7 @@ namespace Guanaco
                         {
                             double edgeL = eVertices[i].DistanceTo(eVertices[(i + 1) % 3]);
                             if (edgeL <= elementFactor)
-                            {
                                 elementFactor = edgeL;
-                            }
                         }
                     }
                     else
@@ -456,45 +464,32 @@ namespace Guanaco
                         {
                             double diagL = eVertices[i].DistanceTo(eVertices[i + 2]);
                             if (diagL <= elementFactor)
-                            {
                                 elementFactor = diagL;
-                            }
                         }
                     }
-                    if (e.Pressure != 0)
-                    {
-                        if (Math.Abs(e.Pressure) >= forceFactor)
-                        {
+
+                    if (e.Pressure != 0 && Math.Abs(e.Pressure) >= forceFactor)
                             forceFactor = Math.Abs(e.Pressure);
-                        }
-                    }
                 }
             }
 
             foreach (Bar bar in model.Bars)
             {
-                foreach (int eId in bar.Elements)
+                foreach (Element element in bar.Elements)
                 {
-                    Element1D e = model.Mesh.Elements[eId] as Element1D;
+                    Element1D e = element as Element1D;
                     Point3d[] eVertices = e.GetVertices().ToArray();
+
                     double l = eVertices[0].DistanceTo(eVertices[1]);
                     if (l <= elementFactor)
-                    {
                         elementFactor = l;
-                    }
-
                 }
             }
 
             foreach (Node n in model.Mesh.Nodes)
             {
-                if (n.ForceLoad.Length != 0)
-                {
-                    if (Math.Abs(n.ForceLoad.Length) >= forceFactor)
-                    {
-                        forceFactor = Math.Abs(n.ForceLoad.Length);
-                    }
-                }
+                if (n.ForceLoad.Length != 0 && Math.Abs(n.ForceLoad.Length) >= forceFactor)
+                    forceFactor = Math.Abs(n.ForceLoad.Length);
             }
 
             elementFactor *= 0.3;
@@ -508,15 +503,15 @@ namespace Guanaco
         public static Grasshopper.GUI.Gradient.GH_Gradient CreateStandardGradient()
         {
             Grasshopper.GUI.Gradient.GH_Gradient gradient = new Grasshopper.GUI.Gradient.GH_Gradient();
-            gradient.AddGrip(0.000, System.Drawing.Color.Blue);
-            gradient.AddGrip(0.125, System.Drawing.Color.SkyBlue);
-            gradient.AddGrip(0.250, System.Drawing.Color.Cyan);
-            gradient.AddGrip(0.375, System.Drawing.Color.SpringGreen);
-            gradient.AddGrip(0.500, System.Drawing.Color.GreenYellow);
-            gradient.AddGrip(0.625, System.Drawing.Color.Yellow);
-            gradient.AddGrip(0.750, System.Drawing.Color.Orange);
-            gradient.AddGrip(0.875, System.Drawing.Color.Red);
-            gradient.AddGrip(1.000, System.Drawing.Color.Brown);
+            gradient.AddGrip(0.000, Color.Blue);
+            gradient.AddGrip(0.125, Color.SkyBlue);
+            gradient.AddGrip(0.250, Color.Cyan);
+            gradient.AddGrip(0.375, Color.SpringGreen);
+            gradient.AddGrip(0.500, Color.GreenYellow);
+            gradient.AddGrip(0.625, Color.Yellow);
+            gradient.AddGrip(0.750, Color.Orange);
+            gradient.AddGrip(0.875, Color.Red);
+            gradient.AddGrip(1.000, Color.Brown);
             return gradient;
         }
 
@@ -533,10 +528,12 @@ namespace Guanaco
             Vector3d Yt = localY * 0.5 * displayFactor;
             Vector3d Xb = localX * 0.55 * displayFactor;
             Vector3d Yb = localY * 0.55 * displayFactor;
+
             List<Point3d> pts = new List<Point3d> { ptc + Xt + Yt, ptc + Xt - Yt, ptc - Xt - Yt, ptc - Xt + Yt };
             List<Point3d> pbs = new List<Point3d> { pbc + Xb + Yb, pbc + Xb - Yb, pbc - Xb - Yb, pbc - Xb + Yb };
             display.AddPolygon(pbs, Color.Brown, Color.Black, true, true);
             display.AddPolygon(pts, Color.Brown, Color.Black, true, true);
+
             for (int i = 0; i < 4; i++)
             {
                 display.AddPolygon(new Point3d[] { pts[i], pts[(i + 1) % 4], n.Location }, Color.Brown, Color.Black, true, true);
@@ -557,6 +554,7 @@ namespace Guanaco
             Point3d s2 = node.Location - v2;
             Line l1 = new Line(s1, v1 * 2);
             Line l2 = new Line(s2, v2 * 2);
+
             display.AddLine(l1);
             display.AddLine(l2);
             display.AddCircle(c);
@@ -567,10 +565,12 @@ namespace Guanaco
         // Populate the element with points - used for preview purposes to show pressure loads.
         public static List<Point3d> PopulateWithPoints(this Element2D element)
         {
-            List<Point3d> corners = element.Nodes.Take(element.PrimaryNodeCount).Select(n => element.ParentMesh.Nodes[n].Location).ToList();
+            List<Point3d> corners = element.Nodes.Take(element.PrimaryNodeCount).Select(n => n.Location).ToList();
             Surface srf;
-            if (corners.Count == 3) srf = NurbsSurface.CreateFromCorners(corners[0], corners[1], corners[2]);
-            else srf = NurbsSurface.CreateFromCorners(corners[0], corners[1], corners[2], corners[3]);
+            if (corners.Count == 3)
+                srf = NurbsSurface.CreateFromCorners(corners[0], corners[1], corners[2]);
+            else
+                srf = NurbsSurface.CreateFromCorners(corners[0], corners[1], corners[2], corners[3]);
 
             corners.Add(corners[0]);
             Polyline perim = new Polyline(corners);
@@ -600,7 +600,8 @@ namespace Guanaco
 
             foreach (Point3d pt in srfPts)
             {
-                if (srfBrep.ClosestPoint(pt).DistanceTo(pt) <= minDist && perim.ClosestPoint(pt).DistanceTo(pt) > minDist) pts.Add(pt);
+                if (srfBrep.ClosestPoint(pt).DistanceTo(pt) <= minDist && perim.ClosestPoint(pt).DistanceTo(pt) > minDist)
+                    pts.Add(pt);
             }
 
             return pts;

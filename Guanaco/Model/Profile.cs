@@ -1,5 +1,5 @@
-﻿using System;
-using Rhino.Geometry;
+﻿using Rhino.Geometry;
+using System;
 
 namespace Guanaco
 {
@@ -35,7 +35,7 @@ namespace Guanaco
         /***************************************************/
 
         // Fields & properties.
-        string _name;
+        private string _name;
         public override string Name
         {
             get
@@ -44,7 +44,7 @@ namespace Guanaco
             }
         }
 
-        double _height;
+        private double _height;
         public double Height
         {
             get
@@ -53,7 +53,7 @@ namespace Guanaco
             }
         }
 
-        double _width;
+        private double _width;
         public double Width
         {
             get
@@ -126,7 +126,7 @@ namespace Guanaco
         /***************************************************/
 
         // Fields & properties.
-        string _name;
+        private string _name;
         public override string Name
         {
             get
@@ -135,7 +135,7 @@ namespace Guanaco
             }
         }
 
-        double _diameter;
+        private double _diameter;
         public double Diameter
         {
             get
@@ -202,7 +202,7 @@ namespace Guanaco
         /***************************************************/
 
         // Fields & properties.
-        string _name;
+        private string _name;
         public override string Name
         {
             get
@@ -211,7 +211,7 @@ namespace Guanaco
             }
         }
 
-        double _diameter;
+        private double _diameter;
         public double Diameter
         {
             get
@@ -220,7 +220,7 @@ namespace Guanaco
             }
         }
 
-        double _thickness;
+        private double _thickness;
         public double Thickness
         {
             get
@@ -294,7 +294,7 @@ namespace Guanaco
         /***************************************************/
 
         // Fields & properties.
-        string _name;
+        private string _name;
         public override string Name
         {
             get
@@ -303,7 +303,7 @@ namespace Guanaco
             }
         }
 
-        double _height;
+        private double _height;
         public double Height
         {
             get
@@ -312,7 +312,7 @@ namespace Guanaco
             }
         }
 
-        double _width;
+        private double _width;
         public double Width
         {
             get
@@ -321,7 +321,7 @@ namespace Guanaco
             }
         }
 
-        double _thickness;
+        private double _thickness;
         public double Thickness
         {
             get

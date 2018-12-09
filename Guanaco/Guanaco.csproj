@@ -67,6 +67,10 @@
     <Compile Include="Model\Bar.cs" />
     <Compile Include="Model\BuildingComponent.cs" />
     <Compile Include="Model\Element.cs" />
+    <Compile Include="Model\Id.cs" />
+    <Compile Include="Model\GuanacoIndexable.cs" />
+    <Compile Include="Model\IndexedCollection.cs" />
+    <Compile Include="Model\LibraryObject.cs" />
     <Compile Include="Util\GeometryUtil.cs" />
     <Compile Include="Model\GuanacoObject.cs" />
     <Compile Include="Util\GHUtil.cs" />
