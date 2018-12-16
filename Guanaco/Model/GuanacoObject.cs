@@ -11,7 +11,7 @@ namespace Guanaco
         /***************************************************/
 
         // Fields & properties.
-        Guid _uniqueId;
+        internal Guid _uniqueId;
         public Guid UniqueId
         {
             get { return this._uniqueId; }
@@ -31,7 +31,10 @@ namespace Guanaco
         public GuanacoObject ShallowClone(bool newID = false)
         {
             GuanacoObject obj = (GuanacoObject)this.MemberwiseClone();
-            if (newID) obj._uniqueId = Guid.NewGuid();
+
+            if (newID)
+                obj._uniqueId = Guid.NewGuid();
+
             return obj;
         }
 
@@ -39,21 +42,6 @@ namespace Guanaco
         {
             return this.ShallowClone(newID);
         }
-
-        /***************************************************/
-    }
-
-
-    /***************************************************/
-    /****  Guanaco library-searchable object class  ****/
-    /***************************************************/
-
-    public interface ILibraryObject
-    {
-        /***************************************************/
-
-        // Properties.
-        string Name { get; }
 
         /***************************************************/
     }

@@ -1,7 +1,8 @@
-﻿using System;
+﻿using Rhino.Geometry;
+using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
-using Rhino.Geometry;
 
 namespace Guanaco
 {
@@ -9,41 +10,53 @@ namespace Guanaco
     /****            Generic element class          ****/
     /***************************************************/
 
-    public abstract class Element : GuanacoObject
+    public abstract class Element : GuanacoIndexable
     {
         /***************************************************/
 
         // Fields & properties.
-        public abstract int Id { get; }
-        public abstract List<int> Nodes { get; }
-        public abstract bool ReducedIntegration { get; set; }
-        public abstract Dictionary<string, double[]> Results { get; }
-        public abstract int Order { get; set; }
-
-        Mesh _parentMesh;
-        public virtual Mesh ParentMesh
+        protected Dictionary<string, double[]> _results;
+        public virtual ReadOnlyDictionary<string, double[]> Results
         {
             get
             {
-                return this._parentMesh;
+                return new ReadOnlyDictionary<string, double[]>(this._results);
             }
         }
 
-        BuildingComponent _parentComponent;
-        public virtual BuildingComponent ParentComponent
+        protected int _order;
+        public virtual int Order
         {
             get
             {
-                return this._parentComponent;
+                return this._order;
+            }
+            set
+            {
+                this._order = value;
             }
         }
 
-        /***************************************************/
-
-        // Convert Id to CCX Id (zero is not allowed).
-        public string CCXId()
+        protected bool _reducedIntegration;
+        public bool ReducedIntegration
         {
-            return (this.Id + 1).ToString();
+            get
+            {
+                return this._reducedIntegration;
+            }
+            set
+            {
+                this._reducedIntegration = value;
+            }
+        }
+
+        protected List<Node> _nodes;
+        public IEnumerable<Node> Nodes
+        {
+            get
+            {
+                return this._nodes;
+            }
         }
 
         /***************************************************/
@@ -52,20 +65,22 @@ namespace Guanaco
         public abstract List<string> ToCCX();
         public abstract string CCXType();
         public abstract IEnumerable<Point3d> GetVertices();
+        public abstract GuanacoObject Clone(Mesh targetMesh, bool newID);
 
+        /***************************************************/
+
+        // Add result to the element.
+        internal void AddResult(string resultType, double[] resultValue)
+        {
+            this._results.Add(resultType, resultValue);
+        }
+
+        /***************************************************/
+
+        // Get results from the element.
         public virtual double[] GetResults(string resultType)
         {
-            return Results.ContainsKey(resultType) ? Results[resultType] : null;
-        }
-
-        public virtual void SetParentMesh(Mesh parentMesh)
-        {
-            this._parentMesh = parentMesh;
-        }
-
-        public virtual void SetParentComponent(BuildingComponent parentComponent)
-        {
-            this._parentComponent = parentComponent;
+            return this._results.ContainsKey(resultType) ? this._results[resultType] : null;
         }
 
         /***************************************************/
@@ -79,49 +94,8 @@ namespace Guanaco
     public class Element1D : Element
     {
         /***************************************************/
-
+        
         // Fields & properties.
-        int _id;
-        public override int Id
-        {
-            get
-            {
-                return this._id;
-            }
-        }
-
-        List<int> _nodes;
-        public override List<int> Nodes
-        {
-            get
-            {
-                return this._nodes;
-            }
-        }
-
-        bool _reducedIntegration;
-        public override bool ReducedIntegration
-        {
-            get
-            {
-                return this._reducedIntegration;
-            }
-            set
-            {
-                this._reducedIntegration = value;
-            }
-        }
-
-        Dictionary<string, double[]> _results;
-        public override Dictionary<string, double[]> Results
-        {
-            get
-            {
-                return this._results;
-            }
-        }
-
-        int _order;
         public override int Order
         {
             get
@@ -140,10 +114,8 @@ namespace Guanaco
         /***************************************************/
 
         // Constructors.
-        public Element1D(Mesh parentMesh, int id, List<int> nodes, int order, bool reducedIntegration)
+        public Element1D(List<Node> nodes, int order, bool reducedIntegration)
         {
-            this.SetParentMesh(parentMesh);
-            this._id = id;
             this._nodes = nodes;
             this._order = order;
             this._reducedIntegration = reducedIntegration;
@@ -155,8 +127,8 @@ namespace Guanaco
         // Get location of element's primary nodes.
         public override IEnumerable<Point3d> GetVertices()
         {
-            yield return this.ParentMesh.Nodes[Nodes[0]].Location;
-            yield return this.ParentMesh.Nodes[Nodes[Nodes.Count - 1]].Location;
+            yield return this._nodes[0].Location;
+            yield return this._nodes[this._nodes.Count - 1].Location;
         }
 
         /***************************************************/
@@ -165,9 +137,9 @@ namespace Guanaco
         public override List<string> ToCCX()
         {
             string s = this.CCXId() + ",";
-            foreach (int n in this._nodes)
+            foreach (Node n in this._nodes)
             {
-                s += ((n + 1).ToString() + ",");
+                s += (n.CCXId() + ",");
             }
             s = s.TrimEnd(',');
             return new List<string> { s };
@@ -186,8 +158,10 @@ namespace Guanaco
                 CCXFormat += "32";
             else
                 throw new Exception("Unknown element type! Make sure the element is 1st or 2nd order beam element.");
+
             if (this._reducedIntegration)
                 CCXFormat += "R";
+
             return CCXFormat;
         }
 
@@ -211,16 +185,33 @@ namespace Guanaco
 
         /***************************************************/
 
-        // Clone.
+        //Clone.
         public override GuanacoObject Clone(bool newID = false)
         {
             Element1D e = this.ShallowClone(newID) as Element1D;
-            e._nodes = new List<int>(this._nodes);
+            e._nodes = this._nodes.Select(n => n.Clone(newID) as Node).ToList();
+
             e._results = new Dictionary<string, double[]>(this._results);
             foreach (string r in this._results.Keys)
             {
-                e.Results[r] = this._results[r].ToArray();
+                e._results[r] = this._results[r].ToArray();
             }
+
+            e._parentCollection = null;
+            e._id = null;
+            return e;
+        }
+
+        // Clone to a target mesh.
+        public override GuanacoObject Clone(Mesh targetMesh, bool newID = false)
+        {
+            Element1D e = this.Clone(newID) as Element1D;
+            if (targetMesh != null)
+            {
+                targetMesh.AddElement(e, this._id.AsInteger);
+                e._nodes = this._nodes.Select(n => targetMesh.Nodes[n.Id.AsInteger]).ToList();
+            }
+
             return e;
         }
 
@@ -237,47 +228,7 @@ namespace Guanaco
         /***************************************************/
 
         // Fields & properties.
-        int _id;
-        public override int Id
-        {
-            get
-            {
-                return this._id;
-            }
-        }
-
-        List<int> _nodes;
-        public override List<int> Nodes
-        {
-            get
-            {
-                return this._nodes;
-            }
-        }
-
-        bool _reducedIntegration;
-        public override bool ReducedIntegration
-        {
-            get
-            {
-                return this._reducedIntegration;
-            }
-            set
-            {
-                this._reducedIntegration = value;
-            }
-        }
-
-        Dictionary<string, double[]> _results;
-        public override Dictionary<string, double[]> Results
-        {
-            get
-            {
-                return this._results;
-            }
-        }
-
-        Vector3d[] _orientation;
+        private Vector3d[] _orientation;
         public Vector3d[] Orientation
         {
             get
@@ -286,7 +237,6 @@ namespace Guanaco
             }
         }
 
-        int _order;
         public override int Order
         {
             get
@@ -302,7 +252,7 @@ namespace Guanaco
             }
         }
 
-        int _primaryNodeCount;
+        private int _primaryNodeCount;
         public int PrimaryNodeCount
         {
             get
@@ -311,7 +261,7 @@ namespace Guanaco
             }
         }
 
-        double _pressure;
+        private double _pressure;
         public double Pressure
         {
             get
@@ -320,7 +270,7 @@ namespace Guanaco
             }
         }
 
-        Element2DType _feType;
+        private Element2DType _feType;
         public Element2DType FEType
         {
             get
@@ -333,7 +283,7 @@ namespace Guanaco
             }
         }
 
-        bool _composite;
+        private bool _composite;
         public bool Composite
         {
             get
@@ -345,10 +295,8 @@ namespace Guanaco
         /***************************************************/
 
         // Constructors.
-        public Element2D(Mesh parentMesh, int id, List<int> nodes, int order, bool reducedIntegration, bool composite = false)
+        public Element2D(List<Node> nodes, int order, bool reducedIntegration, bool composite = false)
         {
-            this.SetParentMesh(parentMesh);
-            this._id = id;
             this._nodes = nodes;
             this._order = order;
             this._primaryNodeCount = nodes.Count / order;
@@ -383,7 +331,7 @@ namespace Guanaco
         {
             for (int i = 0; i < PrimaryNodeCount; i++)
             {
-                yield return this.ParentMesh.Nodes[Nodes[i]].Location;
+                yield return this._nodes[i].Location;
             }
         }
 
@@ -392,12 +340,7 @@ namespace Guanaco
         // Get centroid of an element.
         public Point3d GetCentroid()
         {
-            List<Point3d> vertices = new List<Point3d>();
-            for (int i = 0; i < this._primaryNodeCount; i++)
-            {
-                vertices.Add(this.ParentMesh.Nodes[Nodes[i]].Location);
-            }
-            return GeometryUtil.Average(vertices);
+            return GeometryUtil.Average(this.GetVertices());
         }
 
         /***************************************************/
@@ -405,10 +348,13 @@ namespace Guanaco
         // Get normal of the element acc. to convention used in CalculiX.
         public Vector3d GetNormal(bool unitize = true)
         {
-            Vector3d v1 = this.ParentMesh.Nodes[Nodes[0]].Location - this.ParentMesh.Nodes[Nodes[1]].Location;
-            Vector3d v2 = this.ParentMesh.Nodes[Nodes[2]].Location - this.ParentMesh.Nodes[Nodes[1]].Location;
+            Vector3d v1 = this._nodes[0].Location - this._nodes[1].Location;
+            Vector3d v2 = this._nodes[2].Location - this._nodes[1].Location;
             Vector3d CP = Vector3d.CrossProduct(v2, v1);
-            if (unitize) CP.Unitize();
+
+            if (unitize)
+                CP.Unitize();
+
             return CP;
         }
 
@@ -418,17 +364,16 @@ namespace Guanaco
         public void FlipNormal()
         {
             if (Order == 1)
-            {
                 this._nodes.Reverse();
-            }
             else
             {
-                List<int> stNodes, ndNodes;
+                List<Node> stNodes, ndNodes;
                 stNodes = this._nodes.GetRange(0, PrimaryNodeCount);
                 stNodes.Reverse();
                 ndNodes = this._nodes.GetRange(PrimaryNodeCount, PrimaryNodeCount);
                 this._nodes = stNodes.Concat(ndNodes).ToList();
             }
+
             this._pressure *= -1;
         }
 
@@ -476,6 +421,7 @@ namespace Guanaco
                 CCXFormat += "8R";
             else
                 throw new Exception("Unknown element type! Make sure the element is either tri or quad, 1st or 2nd order.");
+
             return CCXFormat;
         }
 
@@ -487,7 +433,7 @@ namespace Guanaco
             List<string> ss = new List<string>();
             string s = this.CCXId() + ",";
 
-            foreach (List<int> chnk in GuanacoUtil.Chunks(this._nodes, 15))
+            foreach (List<int> chnk in GuanacoUtil.Chunks(this._nodes.Select(n => n.Id.AsInteger).ToList(), 15))
             {
                 foreach (int n in chnk)
                 {
@@ -506,12 +452,15 @@ namespace Guanaco
         // Convert the element orientation to CCX format.
         public string[] OrientationToCCX()
         {
-            if (this._orientation == null) return new string[0];
+            if (this._orientation == null)
+                return new string[0];
+
             string[] ss = new string[2];
             {
                 ss[0] = "*ORIENTATION,NAME=OR" + this.CCXId();
                 ss[1] = (this._orientation[0].ToString() + "," + this._orientation[1].ToString()).Replace("}", "").Replace("{", "");
             }
+
             return ss;
         }
 
@@ -525,17 +474,32 @@ namespace Guanaco
 
         /***************************************************/
 
-        // Clone.
+        //Clone.
         public override GuanacoObject Clone(bool newID = false)
         {
             Element2D e = this.ShallowClone(newID) as Element2D;
-            e._nodes = new List<int>(this._nodes);
+            e._nodes = this._nodes.Select(n => n.Clone(newID) as Node).ToList();
             e._orientation = new Vector3d[] { new Vector3d(this._orientation[0]), new Vector3d(this._orientation[1]) };
             e._results = new Dictionary<string, double[]>(this._results);
             foreach (string r in this._results.Keys)
             {
-                e.Results[r] = this._results[r].ToArray();
+                e._results[r] = this._results[r].ToArray();
             }
+            e._parentCollection = null;
+            e._id = null;
+            return e;
+        }
+
+        // Clone to a target mesh.
+        public override GuanacoObject Clone(Mesh targetMesh, bool newID = false)
+        {
+            Element2D e = this.Clone(newID) as Element2D;
+            if (targetMesh != null)
+            {
+                targetMesh.AddElement(e, this._id.AsInteger);
+                e._nodes = this._nodes.Select(n => targetMesh.Nodes[n.Id.AsInteger]).ToList();
+            }
+
             return e;
         }
 

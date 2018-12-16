@@ -1,7 +1,7 @@
-﻿using System;
+﻿using Rhino.Geometry;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using Rhino.Geometry;
 
 namespace Guanaco
 {
@@ -14,47 +14,7 @@ namespace Guanaco
         /***************************************************/
 
         // Fields & properties.
-        int _id;
-        public override int Id
-        {
-            get
-            {
-                return this._id;
-            }
-        }
-
-        List<int> _elements;
-        public override List<int> Elements
-        {
-            get
-            {
-                return this._elements;
-            }
-        }
-
-        Material _material;
-        public override Material Material
-        {
-            get
-            {
-                return this._material;
-            }
-            set
-            {
-                this._material = value;
-            }
-        }
-
-        Model _parentModel;
-        public override Model ParentModel
-        {
-            get
-            {
-                return this._parentModel;
-            }
-        }
-
-        Brep _surface;
+        private Brep _surface;
         public Brep Surface
         {
             get
@@ -62,8 +22,8 @@ namespace Guanaco
                 return this._surface;
             }
         }
-        
-        double _thickness;
+
+        private double _thickness;
         public double Thickness
         {
             get
@@ -72,8 +32,8 @@ namespace Guanaco
             }
         }
 
-        Element2D.Element2DType _feType;
-        Element2D.Element2DType FEType
+        private Element2D.Element2DType _feType;
+        public Element2D.Element2DType FEType
         {
             get
             {
@@ -95,12 +55,11 @@ namespace Guanaco
         // Constructors.
         public Panel(Brep surface, double thickness, Material material, int id = -1, Element2D.Element2DType feType = Element2D.Element2DType.Unknown)
         {
-            this._id = id;
             this._surface = surface;
             this._thickness = thickness;
             this._feType = feType;
             this._material = material;
-            this._elements = new List<int>();
+            this._elements = new List<Element>();
 
             // Set the local coordinate system.
             IEnumerable<Point3d> vertices = surface.Vertices.Select(p => p.Location);
@@ -112,43 +71,15 @@ namespace Guanaco
 
         /***************************************************/
 
-        // Add panel to a model.
-        public override void AddToModel(Model model)
-        {
-            this._id = model.NextPanelId();
-            this._parentModel = model;
-            model.AddMaterial(this._material);
-            model.Panels.Add(this);
-        }
-
-        /***************************************************/
-
-        // Set parent model of the panel.
-        public override void SetParentModel(Model model)
-        {
-            this._parentModel = model;
-        }
-
-        /***************************************************/
-
         // Assign elements to the component after meshing.
-        public override void AssignElements(List<int> elementIds)
+        public override void AssignElements(List<Element> elements)
         {
-            this._elements = elementIds;
-            foreach (int id in elementIds)
+            this._elements = elements;
+            foreach (Element element in elements)
             {
-                Element2D e = this._parentModel.Mesh.Elements[id] as Element2D;
-                e.SetParentComponent(this);
+                Element2D e = element as Element2D;
                 e.FEType = this._feType;
             }
-        }
-
-        /***************************************************/
-
-        // Convert Id to CCX Id (zero is not allowed).
-        public string CCXId()
-        {
-            return (this._id + 1).ToString();
         }
 
         /***************************************************/
@@ -171,7 +102,7 @@ namespace Guanaco
             List<string> CCXFormat = new List<string> { "*ORIENTATION,NAME=ORPANEL" + this.CCXId() };
             CCXFormat.Add(GuanacoUtil.RhinoVectorToString(this._lcs.XAxis) + "," + GuanacoUtil.RhinoVectorToString(this._lcs.YAxis));
             CCXFormat.Add("*ELSET,ELSET=PANEL" + this.CCXId());
-            CCXFormat.AddRange(GuanacoUtil.IntsToCCX(this._elements, true));
+            CCXFormat.AddRange(GuanacoUtil.IntsToCCX(this._elements.Select(e => e.Id.AsInteger), true));
             CCXFormat.Add(panelType + " SECTION,MATERIAL=" + this._material.Name + ",ELSET=PANEL" + this.CCXId() + ",ORIENTATION=ORPANEL" + this.CCXId());
             CCXFormat.Add(this._thickness.ToString(GuanacoUtil.Invariant));
             return CCXFormat;
@@ -185,7 +116,19 @@ namespace Guanaco
             Panel p = this.ShallowClone(newID) as Panel;
             p._lcs = new Plane(this._lcs);
             p._surface = this._surface.DuplicateBrep();
-            p._elements = new List<int>(this._elements);
+            p._elements = new List<Element>(this._elements);
+            p._parentCollection = null;
+            p._id = null;
+            return p;
+        }
+
+        // Clone to a target model.
+        public virtual GuanacoObject Clone(Model targetModel, bool newID = false)
+        {
+            Panel p = this.Clone(newID) as Panel;
+            if (targetModel != null)
+                targetModel.AddPanel(p, this._id.AsInteger);
+
             return p;
         }
 

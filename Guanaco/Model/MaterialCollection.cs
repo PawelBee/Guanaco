@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace Guanaco
 {
@@ -13,7 +12,7 @@ namespace Guanaco
         /***************************************************/
 
         // Fields & properties.
-        List<Material> _items;
+        private List<Material> _items;
         public List<Material> Items
         {
             get
@@ -33,14 +32,16 @@ namespace Guanaco
         /***************************************************/
 
         // Add material to a collection.
-        public void AddMaterial(Material material)
+        public void Add(Material material)
         {
             foreach (Material m in this._items)
             {
                 if (m.Name == material.Name)
                 {
-                    if (m == material) return;
-                    else throw new Exception("Duplicate material names are not allowed. Please change " + material.Name + " to another name.");
+                    if (m == material)
+                        return;
+                    else
+                        throw new Exception("Duplicate material names are not allowed. Please change " + material.Name + " to another name.");
                 }
             }
             this._items.Add(material);

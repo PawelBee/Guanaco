@@ -59,6 +59,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CCXExecutionPath.cs" />
     <Compile Include="CCXRunFromFile.cs" />
     <Compile Include="GmshBuildFile.cs" />
     <Compile Include="GmshParams.cs" />

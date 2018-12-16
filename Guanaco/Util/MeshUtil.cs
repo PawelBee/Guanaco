@@ -1,8 +1,7 @@
-﻿using Rhino;
+﻿using Rhino.Geometry;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Rhino.Geometry;
 
 namespace Guanaco
 {
@@ -17,7 +16,8 @@ namespace Guanaco
         // Gmsh parameter class.
         public class GmshParams
         {
-            Element2D.Element2DShape _elementShape;
+            // Fields & properties.
+            private Element2D.Element2DShape _elementShape;
             public Element2D.Element2DShape ElementShape
             {
                 get
@@ -25,8 +25,8 @@ namespace Guanaco
                     return this._elementShape;
                 }
             }
-            
-            GmshAlgorithm _meshingAlgorithm;
+
+            private GmshAlgorithm _meshingAlgorithm;
             public GmshAlgorithm MeshingAlgorithm
             {
                 get
@@ -35,7 +35,7 @@ namespace Guanaco
                 }
             }
 
-            double _maxCharLength;
+            private double _maxCharLength;
             public double MaxCharLength
             {
                 get
@@ -44,7 +44,7 @@ namespace Guanaco
                 }
             }
 
-            bool _secondOrder;
+            private bool _secondOrder;
             public bool SecondOrder
             {
                 get
@@ -53,7 +53,7 @@ namespace Guanaco
                 }
             }
 
-            int _smoothingSteps;
+            private int _smoothingSteps;
             public int SmoothingSteps
             {
                 get
@@ -62,7 +62,7 @@ namespace Guanaco
                 }
             }
 
-            bool _highOrderOptimization;
+            private bool _highOrderOptimization;
             public bool HighOrderOptimization
             {
                 get
@@ -71,7 +71,7 @@ namespace Guanaco
                 }
             }
 
-            double _optimizationThreshold;
+            private double _optimizationThreshold;
             public double OptimizationThreshold
             {
                 get
@@ -80,7 +80,7 @@ namespace Guanaco
                 }
             }
 
-            bool _unifyFaces;
+            private bool _unifyFaces;
             public bool UnifyFaces
             {
                 get
@@ -189,13 +189,9 @@ namespace Guanaco
         public static void ReadMesh(Model model, bool reducedIntegration)
         {
             // Create empty mesh, initiate local variables.
-            Mesh mesh = new Mesh();
-            model.SetMesh(mesh);
             int barCounter = 0;
             int panelCounter = 0;
 
-            int nodeID, elementID;
-            nodeID = elementID = 0;
             bool nodeLines, elementLines, componentLines;
             nodeLines = elementLines = componentLines = false;
             string[] itemSep = new string[] { "," };
@@ -205,7 +201,6 @@ namespace Guanaco
             int elementOrder = -1;
             int elementDimension = -1;
             List<int> elementList = new List<int>();
-
             Dictionary<int, int> elementPairs = new Dictionary<int, int>();
 
             System.IO.StreamReader file = new System.IO.StreamReader(model.GetModelFilePath() + "_Mesh.inp");
@@ -217,9 +212,7 @@ namespace Guanaco
                     continue;
                 }
                 else if (nodeLines && line.StartsWith("*"))
-                {
                     nodeLines = false;
-                }
 
                 // Create Guanaco node based on the given line of input file.
                 else if (nodeLines)
@@ -228,8 +221,7 @@ namespace Guanaco
                     double x = Double.Parse(nodeInfo[1], GuanacoUtil.FloatNum);
                     double y = Double.Parse(nodeInfo[2], GuanacoUtil.FloatNum);
                     double z = Double.Parse(nodeInfo[3], GuanacoUtil.FloatNum);
-                    mesh.Nodes.Add(new Node(mesh, nodeID, new Rhino.Geometry.Point3d(x, y, z)));
-                    nodeID++;
+                    model.Mesh.AddNode(new Node(x, y, z));
                 }
 
                 if (line.StartsWith("*ELEMENT, type="))
@@ -241,86 +233,78 @@ namespace Guanaco
                         case "T3D2":
                             elementOrder = 1;
                             elementDimension = 1;
-                            continue;
+                            break;
                         case "T3D3":
                             elementOrder = 2;
                             elementDimension = 1;
-                            continue;
+                            break;
                         case "CPS3":
-                            elementOrder = 1;
-                            elementDimension = 2;
-                            continue;
                         case "CPS4":
                             elementOrder = 1;
                             elementDimension = 2;
-                            continue;
+                            break;
                         case "CPS6":
-                            elementOrder = 2;
-                            elementDimension = 2;
-                            continue;
                         case "CPS8":
                             elementOrder = 2;
                             elementDimension = 2;
-                            continue;
+                            break;
                         default:
                             throw new Exception("Incorrect element type! Check if all elements in the .inp file are supported by Guanaco.");
                     }
                 }
 
                 else if (elementLines && line.StartsWith("*"))
-                {
                     elementLines = false;
-                }
 
                 // Create Guanaco element based on the given line of input file.
                 else if (elementLines)
                 {
                     string[] elInfo = line.Replace("\n", "").Split(itemSep, StringSplitOptions.None);
-                    List<int> elementNodes = new List<int>();
+                    List<Node> elementNodes = new List<Node>();
                     for (int i = 1; i < elInfo.Length; i++)
                     {
                         int id = int.Parse(elInfo[i]) - 1;
-                        elementNodes.Add(id);
+                        elementNodes.Add(model.Mesh.Nodes[id]);
                     }
 
                     Element el;
                     if (elementDimension == 1)
                     {
                         // Add element.
-                        el = new Element1D(mesh, elementID, elementNodes, elementOrder, reducedIntegration);
+                        el = new Element1D(elementNodes, elementOrder, reducedIntegration);
+                        model.Mesh.AddElement(el as Element1D);
 
                         // Set primary nodes of an element.
-                        mesh.Nodes[elementNodes[0]].Primary = true;
-                        mesh.Nodes[elementNodes.Last()].Primary = true;
+                        elementNodes[0].Primary = true;
+                        elementNodes.Last().Primary = true;
                     }
                     else if (elementDimension == 2)
                     {
                         // Add element.
-                        el = new Element2D(mesh, elementID, elementNodes, elementOrder, reducedIntegration);
+                        el = new Element2D(elementNodes, elementOrder, reducedIntegration);
+                        model.Mesh.AddElement(el as Element2D);
 
                         // Set primary nodes of an element.
                         for (int i = 0; i < (el as Element2D).PrimaryNodeCount; i++)
                         {
-                            mesh.Nodes[elementNodes[i]].Primary = true;
+                            elementNodes[i].Primary = true;
                         }
                     }
                     else throw new Exception("Unsupported element found!");
-                    mesh.Elements.Add(el);
-                    elementPairs.Add(int.Parse(elInfo[0]), elementID);
-
-                    elementID++;
+                    
+                    elementPairs.Add(int.Parse(elInfo[0]), el.Id.AsInteger);
                 }
 
                 if (componentLines && !Char.IsDigit(line[0]))
                 {
                     if (elementDimension == 1)
                     {
-                        model.Bars[barCounter].AssignElements(elementList);
+                        model.Bars[barCounter].AssignElements(elementList.Select(e => model.Mesh.Elements[e]).ToList());
                         barCounter++;
                     }
                     else if (elementDimension == 2)
                     {
-                        model.Panels[panelCounter].AssignElements(elementList);
+                        model.Panels[panelCounter].AssignElements(elementList.Select(e => model.Mesh.Elements[e]).ToList());
                         panelCounter++;
                     }
                     elementList = new List<int>();
@@ -329,21 +313,16 @@ namespace Guanaco
                 if (line.StartsWith("*ELSET,"))
                 {
                     componentLines = true;
-                    if (line.Contains("PhysicalLine"))
-                    {
-                        elementDimension = 1;
-                    }
-                    else if (line.Contains("PhysicalSurface"))
-                    {
-                        elementDimension = 2;
-                    }
-                    else throw new Exception("Gmsh physical entity type not known.");
-                }
 
-                else if (componentLines && line.StartsWith("*"))
-                {
-                    componentLines = false;
+                    if (line.Contains("PhysicalLine"))
+                        elementDimension = 1;
+                    else if (line.Contains("PhysicalSurface"))
+                        elementDimension = 2;
+                    else
+                        throw new Exception("Gmsh physical entity type not known.");
                 }
+                else if (componentLines && line.StartsWith("*"))
+                    componentLines = false;
 
                 // Assign the mesh elements to relevant components.
                 else if (componentLines)
@@ -353,9 +332,7 @@ namespace Guanaco
                     {
                         int id;
                         if (Int32.TryParse(s, out id))
-                        {
                             elementList.Add(elementPairs[id]);
-                        }
                     }
                 }
             }
@@ -363,9 +340,9 @@ namespace Guanaco
             if (elementList.Count > 0)
             {
                 if (elementDimension == 1)
-                    model.Bars[barCounter].AssignElements(elementList);
+                    model.Bars[barCounter].AssignElements(elementList.Select(e => model.Mesh.Elements[e]).ToList());
                 else if (elementDimension == 2)
-                    model.Panels[panelCounter].AssignElements(elementList);
+                    model.Panels[panelCounter].AssignElements(elementList.Select(e => model.Mesh.Elements[e]).ToList());
             }
 
             file.Close();
@@ -389,19 +366,17 @@ namespace Guanaco
                 if (element is Element2D)
                 {
                     Element2D e = element as Element2D;
-                    if (e.PrimaryNodeCount == 4)
-                    {
-                        rhinoMesh.Faces.AddFace(e.Nodes[0], e.Nodes[1], e.Nodes[2], e.Nodes[3]);
-                    }
-                    else if (e.PrimaryNodeCount == 3)
-                    {
-                        rhinoMesh.Faces.AddFace(e.Nodes[0], e.Nodes[1], e.Nodes[2]);
-                    }
+                    int[] nodeIds = e.Nodes.Take(e.PrimaryNodeCount).Select(n => n.Id.AsInteger).ToArray();
+
+                    if (nodeIds.Length == 4)
+                        rhinoMesh.Faces.AddFace(nodeIds[0], nodeIds[1], nodeIds[2], nodeIds[3]);
+                    else if (nodeIds.Length == 3)
+                        rhinoMesh.Faces.AddFace(nodeIds[0], nodeIds[1], nodeIds[2]);
                 }
                 else if (element is Element1D)
                 {
                     Element1D e = element as Element1D;
-                    barElements.Add(new LineCurve(rhinoMesh.Vertices[e.Nodes[0]], rhinoMesh.Vertices[e.Nodes[e.Nodes.Count - 1]]));
+                    barElements.Add(new LineCurve(rhinoMesh.Vertices[e.Nodes.First().Id.AsInteger], rhinoMesh.Vertices[e.Nodes.Last().Id.AsInteger]));
                 }
             }
 

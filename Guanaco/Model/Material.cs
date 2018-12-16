@@ -11,9 +11,24 @@ namespace Guanaco
     {
         /***************************************************/
 
-        // Properties.
-        public abstract string Name { get; }
-        public abstract double Density { get; }
+        // Fields & properties.
+        protected string _name;
+        public string Name
+        {
+            get
+            {
+                return this._name;
+            }
+        }
+
+        protected double _density;
+        public double Density
+        {
+            get
+            {
+                return this._density;
+            }
+        }
         
         /***************************************************/
 
@@ -33,25 +48,7 @@ namespace Guanaco
         /***************************************************/
 
         // Fields & properties.
-        string _name;
-        public override string Name
-        {
-            get
-            {
-                return this._name;
-            }
-        }
-        
-        double _density;
-        public override double Density
-        {
-            get
-            {
-                return this._density;
-            }
-        }
-        
-        double _e;
+        private double _e;
         public double E
         {
             get
@@ -59,8 +56,8 @@ namespace Guanaco
                 return this._e;
             }
         }
-        
-        double _v;
+
+        private double _v;
         public double v
         {
             get
@@ -110,25 +107,7 @@ namespace Guanaco
         /***************************************************/
 
         // Fields & properties.
-        string _name;
-        public override string Name
-        {
-            get
-            {
-                return this._name;
-            }
-        }
-
-        double _density;
-        public override double Density
-        {
-            get
-            {
-                return this._density;
-            }
-        }
-
-        double _e1;
+        private double _e1;
         public double E1
         {
             get
@@ -137,7 +116,7 @@ namespace Guanaco
             }
         }
 
-        double _e2;
+        private double _e2;
         public double E2
         {
             get
@@ -146,7 +125,7 @@ namespace Guanaco
             }
         }
 
-        double _e3;
+        private double _e3;
         public double E3
         {
             get
@@ -155,7 +134,7 @@ namespace Guanaco
             }
         }
 
-        double _v12;
+        private double _v12;
         public double v12
         {
             get
@@ -173,7 +152,7 @@ namespace Guanaco
             }
         }
 
-        double _v23;
+        private double _v23;
         public double v23
         {
             get
@@ -182,7 +161,7 @@ namespace Guanaco
             }
         }
 
-        double _g12;
+        private double _g12;
         public double G12
         {
             get
@@ -191,7 +170,7 @@ namespace Guanaco
             }
         }
 
-        double _g13;
+        private double _g13;
         public double G13
         {
             get
@@ -200,7 +179,7 @@ namespace Guanaco
             }
         }
 
-        double _g23;
+        private double _g23;
         public double G23
         {
             get

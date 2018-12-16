@@ -6,23 +6,38 @@ namespace Guanaco
     /****             Building component            ****/
     /***************************************************/
 
-    public abstract class BuildingComponent : GuanacoObject
+    public abstract class BuildingComponent : GuanacoIndexable
     {
         /***************************************************/
 
         // Fields & properties.
-        public abstract int Id { get; }
-        public abstract Material Material { get; set; }
-        public abstract List<int> Elements { get; }
-        public abstract Model ParentModel { get; }
+        protected Material _material;
+        public virtual Material Material
+        {
+            get
+            {
+                return this._material;
+            }
+            set
+            {
+                this._material = value;
+            }
+        }
+
+        protected List<Element> _elements;
+        public virtual IEnumerable<Element> Elements
+        {
+            get
+            {
+                return this._elements;
+            }
+        }
 
         /***************************************************/
 
         // Methods to be implemented.
         public abstract List<string> ToCCX();
-        public abstract void AssignElements(List<int> elementIds);
-        public abstract void AddToModel(Model model);
-        public abstract void SetParentModel(Model model);
+        public abstract void AssignElements(List<Element> elements);
 
         /***************************************************/
     }

@@ -1,13 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using Rhino.Geometry;
+using System.Collections.Generic;
 using System.Linq;
-using Rhino.Geometry;
 
 namespace Guanaco
 {
     /***************************************************/
     /****     Abstract class for all load types     ****/
     /***************************************************/
-    
+
     public abstract class Load : GuanacoObject
     {
 
@@ -23,7 +23,7 @@ namespace Guanaco
         /***************************************************/
 
         // Fields & properties.
-        Point3d _point;
+        private Point3d _point;
         public Point3d Point
         {
             get
@@ -32,7 +32,7 @@ namespace Guanaco
             }
         }
 
-        Vector3d _loadValue;
+        private Vector3d _loadValue;
         public Vector3d LoadValue
         {
             get
@@ -74,7 +74,7 @@ namespace Guanaco
         /***************************************************/
 
         // Fields & properties.
-        Point3d _point;
+        private Point3d _point;
         public Point3d Point
         {
             get
@@ -83,7 +83,7 @@ namespace Guanaco
             }
         }
 
-        Vector3d _axis;
+        private Vector3d _axis;
         public Vector3d Axis
         {
             get
@@ -92,7 +92,7 @@ namespace Guanaco
             }
         }
 
-        double _loadValue;
+        private double _loadValue;
         public double LoadValue
         {
             get
@@ -135,8 +135,8 @@ namespace Guanaco
         /***************************************************/
 
         // Fields & properties.
-        List<Infill> _infills;
-        public List<Infill> Infills
+        private List<Infill> _infills;
+        public IEnumerable<Infill> Infills
         {
             get
             {
@@ -144,7 +144,7 @@ namespace Guanaco
             }
         }
 
-        string _loadFunction;
+        private string _loadFunction;
         public string LoadFunction
         {
             get
@@ -153,7 +153,7 @@ namespace Guanaco
             }
         }
 
-        double _infillDensity;
+        private double _infillDensity;
         public double InfillDensity
         {
             get
@@ -170,7 +170,7 @@ namespace Guanaco
             this._infills = new List<Infill>();
             foreach (Brep b in geometry)
             {
-                Infills.Add(new Infill(b));
+                this._infills.Add(new Infill(b));
             }
             this._loadFunction = loadFunction;
             this._infillDensity = infillDensity;
@@ -199,8 +199,8 @@ namespace Guanaco
         /***************************************************/
 
         // Properties.
-        List<Brep> _surfaces;
-        public List<Brep> Surfaces
+        private List<Brep> _surfaces;
+        public IEnumerable<Brep> Surfaces
         {
             get
             {
@@ -208,7 +208,7 @@ namespace Guanaco
             }
         }
 
-        double _loadValue;
+        private double _loadValue;
         public double LoadValue
         {
             get
@@ -249,7 +249,7 @@ namespace Guanaco
         /***************************************************/
 
         // Fields & properties.
-        Vector3d _gravityFactor;
+        private Vector3d _gravityFactor;
         public Vector3d GravityFactor
         {
             get
@@ -288,8 +288,8 @@ namespace Guanaco
     {
         /***************************************************/
 
-        // Properties.
-        Brep _volume;
+        // Fields & properties.
+        private Brep _volume;
         public Brep Volume
         {
             get
@@ -298,12 +298,21 @@ namespace Guanaco
             }
         }
 
-        double _maxZ;
-        public double maxZ
+        private double _maxZ;
+        public double MaxZ
         {
             get
             {
                 return this._maxZ;
+            }
+        }
+
+        private double _minZ;
+        public double MinZ
+        {
+            get
+            {
+                return this._minZ;
             }
         }
 
@@ -315,6 +324,7 @@ namespace Guanaco
             this._volume = volume;
             BoundingBox bBox = Volume.GetBoundingBox(false);
             this._maxZ = bBox.Max.Z;
+            this._minZ = bBox.Min.Z;
         }
 
         /***************************************************/

@@ -1,6 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using Rhino.Geometry;
+using System.Collections.Generic;
 using System.Linq;
-using Rhino.Geometry;
 
 namespace Guanaco
 {
@@ -24,6 +24,7 @@ namespace Guanaco
                 Y += point.Y;
                 Z += point.Z;
             }
+
             return new Point3d(X / points.Count(), Y / points.Count(), Z / points.Count());
         }
 

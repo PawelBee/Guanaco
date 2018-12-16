@@ -5,6 +5,7 @@ using Grasshopper.Kernel;
 using Grasshopper.Kernel.Data;
 using Grasshopper.Kernel.Special;
 using Grasshopper.Kernel.Types;
+using Newtonsoft.Json;
 using Rhino;
 using Rhino.DocObjects;
 using Rhino.Geometry;
@@ -13,8 +14,6 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Windows.Forms;
-using Newtonsoft.Json;
-using Grasshopper.Kernel;
 
 namespace Guanaco
 {
@@ -32,8 +31,13 @@ namespace Guanaco
             string CCXPath = string.Empty;
             Grasshopper.Kernel.Expressions.GH_Variant var = new Grasshopper.Kernel.Expressions.GH_Variant();
             GrasshopperDocument.ConstantServer.TryGetValue("CCXPath", out var);
-            if (var != null) CCXPath = var._String;
-            if (CCXPath == string.Empty || CCXPath == null || CCXPath == "") CCXPath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + "\\AppData\\Roaming\\Grasshopper\\Libraries\\Guanaco\\CCX\\CCX.exe";
+
+            if (var != null)
+                CCXPath = var._String;
+
+            if (CCXPath == string.Empty || CCXPath == null || CCXPath == "")
+                CCXPath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + "\\AppData\\Roaming\\Grasshopper\\Libraries\\Guanaco\\CCX\\CCX.exe";
+
             return CCXPath;
         }
 
@@ -45,8 +49,13 @@ namespace Guanaco
             string GmshPath = string.Empty;
             Grasshopper.Kernel.Expressions.GH_Variant var = new Grasshopper.Kernel.Expressions.GH_Variant();
             GrasshopperDocument.ConstantServer.TryGetValue("GmshPath", out var);
-            if (var != null) GmshPath = var._String;
-            if (GmshPath == string.Empty || GmshPath == null || GmshPath == "") GmshPath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + "\\AppData\\Roaming\\Grasshopper\\Libraries\\Guanaco\\Gmsh\\gmsh.exe";
+
+            if (var != null)
+                GmshPath = var._String;
+
+            if (GmshPath == string.Empty || GmshPath == null || GmshPath == "")
+                GmshPath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + "\\AppData\\Roaming\\Grasshopper\\Libraries\\Guanaco\\Gmsh\\gmsh.exe";
+
             return GmshPath;
         }
 
